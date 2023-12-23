@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Journal Paper</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(to right, #4CAF50, #45a049);
+    }
+
+    #video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    form {
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #008080;
+    }
+
+    .drag-and-drop-container {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .drag-over {
+      background-color: #f0f8ff;
+      /* Light blue */
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      background-color:black;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .section-wrapper {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Create Journal Paper</h2>
+    <form action="/generate_paper" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="journal-type">Journal Type:</label>
+        <select name="journal-type" id="journal-type" required>
+          <option value="IJMAR-template">IJMAR-template</option>
+          <option value="IJPPR-template">IJPPR-template</option>
+          <option value="JCPR-template">JCPR-template</option>
+          <option value="IJSRM-template">IJSRM-template</option>
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+
+      <input type="hidden" name="sectionIndex" id="sectionIndex" value="0">
+
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" required>
+      </div>
+
+      <div class="form-group">
+        <label for="volume">Volume:</label>
+        <input type="number" name="volume" id="volume" required>
+      </div>
+
+      <div class="form-group">
+        <label for="issuedate">Issue Date:</label>
+        <input type="number" name="issuedate" id="issuedate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="month">Month_Year:</label>
+        <input type="month" name="month" id="month" required style="width: 200px;">
+      </div>
+      <div class="form-group">
+        <label for="page_no">PP:</label>
+        <input type="value" name="page_no" id="page_no" min="1" max="100" step="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="issndate">ISSN Date:</label>
+        <input type="value" name="issndate" id="issndate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="doi">DOI:</label>
+        <input type="date" name="doi" id="doi">
+      </div>
+
+      <div class="form-group">
+        <label for="authors">Authors:</label>
+        <input type="text" name="authors" id="authors" required>
+      </div>
+
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea name="address" id="address" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="sub_date">Submission Date:</label>
+        <input type="date" name="sub_date" id="sub_date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="rev_date">Revised Date:</label>
+        <input type="date" name="rev_date" id="rev_date">
+      </div>
+
+      <div class="form-group">
+        <label for="acc_date">Acceptance Date:</label>
+        <input type="date" name="acc_date" id="acc_date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="abstract">Abstract:</label>
+        <textarea name="abstract" rows="4" id="abstract" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="keyword">Keywords:</label>
+        <input type="text" name="keyword" id="keyword" required>
+      </div>
+      
+      <div id="sections">
+        <!-- Section fields will be dynamically added here -->
+      </div>
+
+      <div class="form-group" id="section-container">
+        <button type="button" id="add-section-button">Add Section</button>
+      </div>
+
+      <div class="form-group">
+        <label for="reference">References:</label>
+        <textarea name="reference" rows="4" id="reference" required></textarea>
+      </div>
+      
+      <div class="form-group">
+        <input type="submit" value="Generate Journal Paper">
+      </div>
+      
+    </form>
+  </div>
+</body>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const addSectionButton = document.getElementById("add-section-button");
+    const sectionsContainer = document.getElementById("sections");
+    const imageUploadInput = document.getElementById("image-upload");
+
+    let sectionIndex = 0;
+
+    addSectionButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      const sectionDiv = document.createElement("div");
+      sectionDiv.className = "form-group";
+
+      // Hidden input field to store fieldIndex
+      const fieldIndexInput = document.createElement("input");
+      fieldIndexInput.type = "hidden";
+      fieldIndexInput.name = `field_index_${sectionIndex + 1}`;
+      fieldIndexInput.value = 0; // Initial value for fieldIndex
+      sectionDiv.appendChild(fieldIndexInput);
+
+      // Hidden input field to store element types (table or input)
+      const elementTypeInput = document.createElement("input");
+      elementTypeInput.type = "hidden";
+      elementTypeInput.name = `element_type_${sectionIndex + 1}`;
+      elementTypeInput.value = "None"; // Initial value for element types
+      sectionDiv.appendChild(elementTypeInput);
+
+      const sectionTitleInput = document.createElement("input");
+      sectionTitleInput.type = "text";
+      sectionTitleInput.name = `section_title_${sectionIndex + 1}`;
+      sectionTitleInput.id = `section_title_${sectionIndex + 1}`;
+      sectionTitleInput.value = "";
+      sectionTitleInput.placeholder = "Section Title";
+      sectionTitleInput.required = true;
+      sectionTitleInput.style.marginBottom = "10px";
+
+      const sectionContentInput = document.createElement("textarea");
+      sectionContentInput.name = `section_content_${sectionIndex + 1}`;
+      sectionContentInput.id = `section_content_${sectionIndex + 1}`;
+      sectionContentInput.value = "";
+      sectionContentInput.placeholder = "Section Content";
+      sectionContentInput.rows = 4;
+      sectionContentInput.required = true;
+
+      //-----------------------Dynamic Image Upload-----------------------
+      const addImageBtn = document.createElement("button");
+      addImageBtn.type = "button";
+      addImageBtn.textContent = "Add Image";
+      addImageBtn.style.backgroundColor = "#4169E1";
+      
+      addImageBtn.addEventListener("click", function () {
+        const currentFieldIndex = parseInt(fieldIndexInput.value, 10);
+
+        const dropContainer = document.createElement("div");
+        dropContainer.className = "drag-and-drop-container";
+
+        const imageInput = document.createElement("input");
+        imageInput.type = "file";
+        const imageFieldName = `section_image_${sectionIndex}_${currentFieldIndex + 1}`;
+        imageInput.name = imageFieldName;
+        imageInput.id = `section_image_${sectionIndex}_${currentFieldIndex + 1}`;
+        imageInput.accept = "image/*";
+        imageInput.style.display = "none";
+
+        const figureNameInput = document.createElement("input");
+        figureNameInput.type = "text";
+        const figureNameFieldName = `section_image_label_${sectionIndex}_${currentFieldIndex + 1}`;
+        figureNameInput.name = figureNameFieldName;
+        figureNameInput.id = `section_image_label_${sectionIndex}_${currentFieldIndex + 1}`;
+        figureNameInput.placeholder = "Image Figure Name";
+        figureNameInput.style.marginTop = "10px";
+
+        const dropLabel = document.createElement("label");
+        dropLabel.textContent = "Drag & Drop or Click to Upload Image";
+        dropLabel.htmlFor = imageInput.id;
+
+        dropContainer.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          dropContainer.classList.add("drag-over");
+        });
+
+        dropContainer.addEventListener("dragleave", function () {
+          dropContainer.classList.remove("drag-over");
+        });
+
+        dropContainer.addEventListener("drop", function (e) {
+          e.preventDefault();
+          dropContainer.classList.remove("drag-over");
+
+          const files = e.dataTransfer.files;
+          handleFiles(files, dropLabel, imageInput);
+        });
+
+        imageInput.addEventListener("change", function (e) {
+          const files = e.target.files;
+          handleFiles(files, dropLabel, imageInput);
+        });
+
+        fieldIndexInput.value = currentFieldIndex + 1;
+
+        elementTypeInput.value = elementTypeInput.value + (elementTypeInput.value ? "," : "") + "image";
+
+        dropContainer.appendChild(dropLabel);
+        dropContainer.appendChild(imageInput);
+        sectionDiv.appendChild(dropContainer);
+        sectionDiv.appendChild(figureNameInput);
+
+      });
+
+      //-----------------------Dynamic Table Upload-----------------------
+      const addTableBtn = document.createElement("button");
+      addTableBtn.type = "button";
+      addTableBtn.textContent = "Add Table";
+      addTableBtn.style.marginRight = "20px";
+      addTableBtn.style.backgroundColor ="#F28C28";
+      addTableBtn.addEventListener("click", function () {
+
+        currentFieldIndex = parseInt(fieldIndexInput.value, 10);
+
+
+        const tableFigureNameInput = document.createElement("input");
+        tableFigureNameInput.type = "text";
+        tableFigureNameInput.name = `section_table_label_${sectionIndex}_${currentFieldIndex + 1}`;
+        tableFigureNameInput.id = `section_table_label_${sectionIndex}_${currentFieldIndex + 1}`;
+        tableFigureNameInput.placeholder = "Table Figure Name";
+        tableFigureNameInput.style.marginTop = "10px";
+
+
+        const sectionTableTextarea = document.createElement("textarea");
+        const tableFieldName = `section_table_${sectionIndex}_${currentFieldIndex + 1}`;
+        sectionTableTextarea.name = tableFieldName;
+        sectionTableTextarea.id = `section_table_${sectionIndex}_${currentFieldIndex + 1}`;
+        sectionTableTextarea.value = "";
+        sectionTableTextarea.placeholder = "Table Text";
+        sectionTableTextarea.rows = 4;
+        sectionTableTextarea.required = true;
+        sectionTableTextarea.style.marginTop = "10px";
+
+        // Update fieldIndex value
+        fieldIndexInput.value = currentFieldIndex + 1;
+
+        // Update element type value
+        const currentElementType = elementTypeInput.value;
+        elementTypeInput.value = currentElementType + (currentElementType ? "," : "") + "table";
+
+        sectionDiv.appendChild(tableFigureNameInput);
+
+        sectionDiv.appendChild(sectionTableTextarea);
+
+      });
+
+      sectionDiv.appendChild(sectionTitleInput);
+      sectionDiv.appendChild(sectionContentInput);
+      sectionDiv.appendChild(addTableBtn);
+      sectionDiv.appendChild(addImageBtn);
+      sectionsContainer.appendChild(sectionDiv);
+
+      sectionIndex++;
+      document.getElementById("sectionIndex").value = sectionIndex;
+    });
+  });
+  // Function to handle files and update the drop label
+  function handleFiles(files, dropLabel, imageInput) {
+    if (files.length > 0) {
+      const fileName = files[0].name;
+      dropLabel.textContent = `Image: ${fileName}`;
+
+      const formData = new FormData();
+      formData.append('image', files[0]);
+
+      // Set the files property of the input element
+      imageInput.files = files;
+
+      // Append the imageInput to the form
+      const form = document.querySelector('form');
+      form.appendChild(imageInput);
+    }
+  }
+
+</script>
+</html>
